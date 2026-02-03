@@ -3,7 +3,7 @@
     "description": "Easily integrate Google Tag Manager for seamless tracking, with no code required, and customizable privacy settings for improved data management.",
     "code": "ps_gtm",
     "license": "GPL",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "author": "Playful Sparkle",
     "link": "https://github.com/playfulsparkle/oc4_gtm.git"
   }

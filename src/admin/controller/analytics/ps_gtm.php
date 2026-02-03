@@ -47,7 +47,6 @@ class PsGtm extends \Opencart\System\Engine\Controller
         $separator = version_compare(VERSION, '4.0.2.0', '>=') ? '.' : '|';
 
         $data['action'] = $this->url->link('extension/ps_gtm/analytics/ps_gtm' . $separator . 'save', 'user_token=' . $this->session->data['user_token'] . '&store_id=' . $this->request->get['store_id']);
-        $data['fix_event_handler'] = $this->url->link('extension/ps_gtm/analytics/ps_gtm' . $separator . 'fixEventHandler', 'user_token=' . $this->session->data['user_token']);
         $data['back'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=analytics');
 
         $data['analytics_ps_gtm_status'] = (bool) $this->config->get('analytics_ps_gtm_status');
@@ -178,51 +177,5 @@ class PsGtm extends \Opencart\System\Engine\Controller
 
             $this->model_setting_event->deleteEventByCode('analytics_ps_gtm');
         }
-    }
-
-    public function fixEventHandler(): void
-    {
-        $this->load->language('extension/ps_gtm/analytics/ps_gtm');
-
-        $json = [];
-
-        if (!$this->user->hasPermission('modify', 'extension/ps_gtm/analytics/ps_gtm')) {
-            $json['error'] = $this->language->get('error_permission');
-        }
-
-        if (!$json) {
-            $this->load->model('setting/event');
-
-            $this->model_setting_event->deleteEventByCode('analytics_ps_gtm');
-
-            $separator = version_compare(VERSION, '4.0.2.0', '>=') ? '.' : '|';
-
-            if (version_compare(VERSION, '4.0.1.0', '>=')) {
-                $result = $this->model_setting_event->addEvent([
-                    'code' => 'analytics_ps_gtm',
-                    'description' => '',
-                    'trigger' => 'catalog/view/common/header/before',
-                    'action' => 'extension/ps_gtm/analytics/ps_gtm' . $separator . 'eventCatalogViewCommonHeaderBefore',
-                    'status' => '1',
-                    'sort_order' => '0'
-                ]);
-            } else {
-                $result = $this->model_setting_event->addEvent(
-                    'analytics_ps_gtm',
-                    '',
-                    'catalog/view/common/header/before',
-                    'extension/ps_gtm/analytics/ps_gtm' . $separator . 'eventCatalogViewCommonHeaderBefore'
-                );
-            }
-
-            if ($result > 0) {
-                $json['success'] = $this->language->get('text_success');
-            } else {
-                $json['error'] = $this->language->get('error_event');
-            }
-        }
-
-        $this->response->addHeader('Content-Type: application/json');
-        $this->response->setOutput(json_encode($json));
     }
 }

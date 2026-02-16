@@ -145,37 +145,33 @@ class PsGtm extends \Opencart\System\Engine\Controller
 
     public function install(): void
     {
-        if ($this->user->hasPermission('modify', 'extension/analytics')) {
-            $this->load->model('setting/event');
+        $this->load->model('setting/event');
 
-            $separator = version_compare(VERSION, '4.0.2.0', '>=') ? '.' : '|';
+        $separator = version_compare(VERSION, '4.0.2.0', '>=') ? '.' : '|';
 
-            if (version_compare(VERSION, '4.0.1.0', '>=')) {
-                $this->model_setting_event->addEvent([
-                    'code' => 'analytics_ps_gtm',
-                    'description' => '',
-                    'trigger' => 'catalog/view/common/header/before',
-                    'action' => 'extension/ps_gtm/analytics/ps_gtm' . $separator . 'eventCatalogViewCommonHeaderBefore',
-                    'status' => '1',
-                    'sort_order' => '0'
-                ]);
-            } else {
-                $this->model_setting_event->addEvent(
-                    'analytics_ps_gtm',
-                    '',
-                    'catalog/view/common/header/before',
-                    'extension/ps_gtm/analytics/ps_gtm' . $separator . 'eventCatalogViewCommonHeaderBefore'
-                );
-            }
+        if (version_compare(VERSION, '4.0.1.0', '>=')) {
+            $this->model_setting_event->addEvent([
+                'code' => 'analytics_ps_gtm',
+                'description' => '',
+                'trigger' => 'catalog/view/common/header/before',
+                'action' => 'extension/ps_gtm/analytics/ps_gtm' . $separator . 'eventCatalogViewCommonHeaderBefore',
+                'status' => '1',
+                'sort_order' => '0'
+            ]);
+        } else {
+            $this->model_setting_event->addEvent(
+                'analytics_ps_gtm',
+                '',
+                'catalog/view/common/header/before',
+                'extension/ps_gtm/analytics/ps_gtm' . $separator . 'eventCatalogViewCommonHeaderBefore'
+            );
         }
     }
 
     public function uninstall(): void
     {
-        if ($this->user->hasPermission('modify', 'extension/analytics')) {
-            $this->load->model('setting/event');
+        $this->load->model('setting/event');
 
-            $this->model_setting_event->deleteEventByCode('analytics_ps_gtm');
-        }
+        $this->model_setting_event->deleteEventByCode('analytics_ps_gtm');
     }
 }

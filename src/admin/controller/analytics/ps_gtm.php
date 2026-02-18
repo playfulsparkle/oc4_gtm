@@ -145,6 +145,26 @@ class PsGtm extends \Opencart\System\Engine\Controller
 
     public function install(): void
     {
+        $this->load->model('setting/setting');
+
+        $data = [
+            'analytics_ps_gtm_ad_personalization' => 0,
+            'analytics_ps_gtm_ad_storage' => 1,
+            'analytics_ps_gtm_ad_user_data' => 1,
+            'analytics_ps_gtm_ads_data_redaction' => 0,
+            'analytics_ps_gtm_analytics_storage' => 1,
+            'analytics_ps_gtm_functionality_storage' => 1,
+            'analytics_ps_gtm_gcm_status' => 0,
+            'analytics_ps_gtm_gtm_id' => '',
+            'analytics_ps_gtm_personalization_storage' => 1,
+            'analytics_ps_gtm_security_storage' => 1,
+            'analytics_ps_gtm_status' => 0,
+            'analytics_ps_gtm_url_passthrough' => 0,
+            'analytics_ps_gtm_wait_for_update' => 500,
+        ];
+
+        $this->model_setting_setting->editSetting('analytics_ps_gtm', $data);
+
         $this->load->model('setting/event');
 
         $separator = version_compare(VERSION, '4.0.2.0', '>=') ? '.' : '|';

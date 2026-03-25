@@ -146,15 +146,15 @@ class PsGtm extends \Opencart\System\Engine\Controller
     }
 
     /**
-     * Event handler for `catalog/view/common/header/before`.
+     * Event: catalog/view/common/header/before
      *
      * @param string $route
      * @param array $args
-     * @param string $template
+     * @param string $output
      *
      * @return void
      */
-    public function eventCatalogViewCommonHeaderBefore(string &$route, array &$args, string &$template): void
+    public function eventCatalogViewCommonHeaderBefore(&$route, &$args, &$output)
     {
         if (!$this->config->get('analytics_ps_gtm_status')) {
             return;
@@ -164,9 +164,10 @@ class PsGtm extends \Opencart\System\Engine\Controller
 
         $args['ps_gtm_gtm_id'] = $this->config->get('analytics_ps_gtm_gtm_id');
 
-        $headerViews = $this->model_extension_ps_gtm_analytics_ps_gtm->replaceHeaderViews($args);
 
-        $template = $this->replaceViews($route, $template, $headerViews);
+        $views = $this->model_extension_ps_gtm_analytics_ps_gtm->replaceHeaderViews($args);
+
+        $output = $this->replaceViews($route, $output, $views);
     }
 
     /**
@@ -339,7 +340,7 @@ class PsGtm extends \Opencart\System\Engine\Controller
      * If positions are specified, the method performs replacements only at those positions.
      *
      * @param string $route The route associated with the template.
-     * @param string $template The name of the template to be processed.
+     * @param string|null $template The name of the template to be processed.
      * @param array $views An array of associative arrays where each associative array contains:
      *                     - string 'search': The string to search for in the template.
      *                     - string 'replace': The string to replace the 'search' string with.
@@ -349,8 +350,16 @@ class PsGtm extends \Opencart\System\Engine\Controller
      *
      * @return mixed The modified template content after performing the replacements.
      */
-    protected function replaceViews(string $route, string $template, array $views): mixed
+    protected function replaceViews(string $route, string|null $template, array $views): mixed
     {
+        if (is_null($template)) {
+            $template = '';
+        }
+
+        if (empty($views)) {
+            return $this->getTemplateBuffer($route, $template);
+        }
+
         $output = $this->getTemplateBuffer($route, $template);
 
         foreach ($views as $view) {
